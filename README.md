@@ -20,6 +20,15 @@ samples, guidance on mobile development, and a full API reference.
 
 docker build -t flutter-dev-android . --no-cache
 
+docker run -it --rm ^
+  -v %CD%:/app ^
+  -v %USERPROFILE%\.gradle:/root/.gradle ^
+  -v %USERPROFILE%\.android:/root/.android ^
+  -v %USERPROFILE%\.pub-cache:/root/.pub-cache ^
+  --network host ^
+  -e ANDROID_SDK_ROOT=/opt/android-sdk ^
+  flutter-dev-android bash
+
 //esta de mas esto
 docker run -it --rm \
   -v /$(pwd):/app \
