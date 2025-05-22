@@ -18,17 +18,21 @@ samples, guidance on mobile development, and a full API reference.
 
 # Docker Setup
 
+Comando para crear la imagen de Docker:
+``` bash
 docker build -t flutter-dev-android . --no-cache
+```
 
-//esta de mas esto
-docker run -it --rm \
-  -v /$(pwd):/app \
-  -v ~/.gradle:/root/.gradle \
-  -v ~/.android:/root/.android \
-  -v ~/.pub-cache:/root/.pub-cache \
-  -e ANDROID_SDK_ROOT=/opt/android-sdk \
-  flutter-dev-android bash
+Comando para ejecutar el contenedor de linux en docker con todo el proyecto de flutter previamente configurado:
+``` bash
+docker run -it --rm -v "%CD%":/app -v "%USERPROFILE%\.gradle":/root/.gradle -v "%USERPROFILE%\.android":/root/.android -v "%USERPROFILE%\.pub-cache":/root/.pub-cache --device /dev/kvm -e ANDROID_SDK_ROOT=/opt/android-sdk -p 8080:8080 -p 5354:5354 flutter-dev-android bash
+```
 
+En este punto, puedes ejecutar el comando `flutter doctor` para verificar que todo esté configurado correctamente. 
+
+Y luego  `flutter pub get` para obtener todas las dependencias del proyecto y luego
+
+### Ejecutando en dispositivo fisico
 In these two operating systems it is not possible to share your USB device with the container, that is why we must resort to an alternative way.
 
 First you will have to have the platforms tools that contain ADB installed on your host machine and you can download them here
