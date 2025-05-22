@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:threedverse_mobile/screens/register_screen.dart';
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,27 +14,42 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-  final AuthService _authService = AuthService();
+  String? _errorMessage;
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     
     try {
-      final response = await _authService.login(
-        _usernameController.text,
-        _passwordController.text,
+      final authService = AuthService();
+      final response = await authService.login(
+        _usernameController.text.trim(),
+        _passwordController.text.trim(),
       );
       
-      // Navegar a la pantalla principal después del login
+      // Aquí deberías guardar el token (usando shared_preferences)
+      final token = response['token'];
+      final user = response['user'];
+      print('Login exitoso! Token: $token, Usuario: $user');
+      
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceAll('AuthError: ', '');
+      });
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
+          SnackBar(
+            content: Text(_errorMessage!),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -53,16 +69,21 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Figuras 3D',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
+              const FlutterLogo(size: 100),
               const SizedBox(height: 30),
+              if (_errorMessage != null)
+                Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _usernameController,
                 decoration: const InputDecoration(
                   labelText: 'Usuario o Email',
                   border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
                 ),
                 validator: (value) =>
                     value!.isEmpty ? 'Ingresa tu usuario o email' : null,
@@ -73,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Contraseña',
                   border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.lock),
                 ),
                 obscureText: true,
                 validator: (value) =>
@@ -84,17 +106,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                  ),
                   child: _isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
                       : const Text('Iniciar Sesión'),
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  // Navegar a registro
-                },
-                child: const Text('¿No tienes cuenta? Regístrate'),
-              ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                );
+              },
+              child: const Text('¿No tienes cuenta? Regístrate'),
+            ),
             ],
           ),
         ),

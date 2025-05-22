@@ -40,4 +40,53 @@ class AuthService {
       throw 'Error inesperado: $e';
     }
   }
+
+
+  // En tu archivo auth_service.dart
+Future<Map<String, dynamic>> register({
+  required String username,
+  required String email,
+  required String password,
+  required String name,
+}) async {
+  try {
+    final response = await _dio.post(
+      '/auth/register',
+      data: {
+        'username': username,
+        'email': email,
+        'password': password,
+        'name': name,
+      },
+    );
+    
+    if (response.data['token'] == null || response.data['user'] == null) {
+      throw 'Respuesta inválida del servidor';
+    }
+    
+    return response.data;
+  } on DioException catch (e) {
+    if (e.response != null) {
+      final errorData = e.response?.data;
+      final errorMessage = errorData['message'] ?? 'Error en el registro';
+      final errorType = errorData['type'] ?? 'AuthError';
+      
+      throw '$errorType: $errorMessage';
+    } else {
+      throw 'Error de conexión: ${e.message}';
+    }
+  } catch (e) {
+    throw 'Error inesperado: $e';
+  }
 }
+
+}
+
+
+
+
+
+
+
+
+
