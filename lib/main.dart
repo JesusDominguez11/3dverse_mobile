@@ -121,7 +121,7 @@
 //   }
 // }
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide CarouselController;
 import 'package:threedverse_mobile/screens/home_screen.dart';
 import 'screens/login_screen.dart';
 
@@ -133,7 +133,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Figuras 3D',
+      title: '3DVerse',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
