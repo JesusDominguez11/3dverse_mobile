@@ -30,21 +30,68 @@ docker run -it --rm -v "%CD%":/app -v "%USERPROFILE%\.gradle":/root/.gradle -v "
 
 En este punto, puedes ejecutar el comando `flutter doctor` para verificar que todo esté configurado correctamente. 
 
-Y luego  `flutter pub get` para obtener todas las dependencias del proyecto y luego
+Y luego  `flutter pub get` para obtener todas las dependencias del proyecto.
 
 ### Ejecutando en dispositivo fisico
-In these two operating systems it is not possible to share your USB device with the container, that is why we must resort to an alternative way.
+En Windows/macOS no es posible compartir directamente dispositivos USB con el contenedor, por lo que debemos usar un método alternativo.
+
+## Pasos para configurar:
 
 First you will have to have the platforms tools that contain ADB installed on your host machine and you can download them here
 
-Connect your device via USB and make sure debugging is enabled, then run in your host machine:
-adb tcpip 5555
-Find the IP address of your device, go to Settings > Wi-Fi > Advanced > IP Address on your device or run adb shell netcfg.
-Connect to device using the IP address with the following command:
-adb connect xxx.xxx.x.x
-Disconnect USB and proceed to open the dev container in vscode.
-Now inside your container run the command from step 3 with the same IP address.
-Verify if the container can list now your device using adb devices.
+#### 1. Prepara tu máquina host:
 
-flutter devices
-flutter run -d 22101320G
+- Instala las herramientas de plataforma de Android que incluyen ADB (puedes descargarlas aquí)
+
+#### 2. Configura tu dispositivo:
+
+- Conecta tu dispositivo físico via USB
+
+- Asegúrate de tener habilitada la depuración USB (en Opciones de desarrollador)
+
+#### 3. En tu máquina host (fuera del contenedor) ejecuta:
+
+``` bash
+adb tcpip 5555
+```
+
+#### 4. Obtén la dirección IP de tu dispositivo:
+
+- Ve a: Ajustes > Wi-Fi > Avanzado > Dirección IP
+
+- O ejecuta en tu host:
+
+``` bash
+adb shell netcfg
+```
+
+#### 5. Conéctate via red:
+
+``` bash
+adb connect xxx.xxx.x.x  # Reemplaza con la IP de tu dispositivo
+```
+
+#### 6. Ahora en el contenedor:
+
+- Abre el contenedor en VSCode
+
+- Ejecuta el mismo comando de conexión con la IP:
+
+```bash
+adb connect xxx.xxx.x.x
+```
+
+- Verifica que el contenedor detecte el dispositivo:
+
+```bash
+adb devices
+```
+
+7. Finalmente ejecuta Flutter:
+
+``` bash
+flutter devices  # Deberías ver tu dispositivo
+flutter run -d <ID_DISPOSITIVO>  # Ejemplo: flutter run -d 22101320G
+```
+
+Nota importante: Puedes desconectar el cable USB después del paso 5, la conexión se mantendrá via Wi-Fi.
